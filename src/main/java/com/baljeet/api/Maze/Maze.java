@@ -1,5 +1,4 @@
-package com.projects.Projects.Website;
-import com.projects.Projects.Website.Cell;
+package com.baljeet.api.Maze;
 
 import java.util.ArrayList;
 import java.util.Random;

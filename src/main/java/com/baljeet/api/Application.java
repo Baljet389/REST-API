@@ -1,14 +1,14 @@
-package com.projects.Projects.Website;
+package com.baljeet.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ProjectsWebsiteApplication {
+public class Application {
 
 	public static void main(String[] args) {
 
-		SpringApplication.run(ProjectsWebsiteApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }

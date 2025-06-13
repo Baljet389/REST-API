@@ -1,4 +1,4 @@
-package com.projects.Projects.Website;
+package com.baljeet.api.Maze;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;

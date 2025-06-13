@@ -1,4 +1,4 @@
-package com.projects.Projects.Website;
+package com.baljeet.api.Maze;
 
 public class Cell {
     public int position;//0- width*height-1

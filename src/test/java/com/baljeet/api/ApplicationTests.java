@@ -1,10 +1,10 @@
-package com.projects.Projects.Website;
+package com.baljeet.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProjectsWebsiteApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {
