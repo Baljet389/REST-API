@@ -31,7 +31,7 @@ public class MazeController {
     @PostMapping("/solve")
     public ResponseEntity<MazeResponses.SolveResponse[]> getMaze() {
         if (currentMaze == null) {
-            throw new IllegalStateException("Maze not yet submitted.");
+            return ResponseEntity.badRequest().build();
         }
         currentMaze.solveMaze();
         MazeResponses.SolveResponse[] response = MazeResponses.SolveResponse.respond(currentMaze.cell,height, width);

@@ -11,10 +11,9 @@ public class Maze {
     Cell[] cell;
     int[] nextcell = new int[4];
     Random rand = new Random();
-    Stack<Integer> al = new Stack<>();
+    Stack<Integer> stack = new Stack<>();
     ArrayList<Integer> aktCells = new ArrayList<>();
-    ArrayList<Integer> score = new ArrayList<>();
-    ArrayList<Integer> wayLength = new ArrayList<>();
+
     Maze(int height, int width) {
         int aktCell = rand.nextInt( height * width - 1);
         this.height = height;
@@ -25,7 +24,7 @@ public class Maze {
         }
 
         while (passageLength < height * width) {
-                al.push(aktCell);
+                stack.push(aktCell);
                 aktCell = chooseNeighbour(aktCell);
                 passageLength++;
                 if(aktCell ==-1){
@@ -79,16 +78,15 @@ public class Maze {
 
     }
     void config(){
-            cell[0].cost(Manhattan(0, height * width - 1));
+            cell[0].setCost(Manhattan(0, height * width - 1));
+            cell[0].setWayLength(0);
             aktCells.add(0);
-            wayLength.add(0);
-            score.add(cell[0].getcost());
             cell[0].visitedSolve = true;
     }
     int backtrack() {
         int next = -1;
-        while(!al.isEmpty()) {
-            next = chooseNeighbour(al.pop());
+        while(!stack.isEmpty()) {
+            next = chooseNeighbour(stack.pop());
             if(next != -1){
                 return next;
             }
@@ -107,20 +105,17 @@ public class Maze {
             nextcell[3] = s + 1;
             for (int i = 0; i < 4; i++) {
                 if(cell[s].activeWalls(i) && !cell[nextcell[i]].visitedSolve) {
-                    cell[nextcell[i]].cost(Manhattan(nextcell[i], height * width - 1) + wayLength.get(aktCellIndex) + 1);
-                    score.add(cell[nextcell[i]].getcost());
+                    cell[nextcell[i]].setCost(Manhattan(nextcell[i], height * width - 1) + cell[s].getWayLength() + 1);
                     aktCells.add(nextcell[i]);
-                    wayLength.add(1 + wayLength.get(aktCellIndex));
-                    cell[nextcell[i]].SetReferenceCell(s);
+                    cell[nextcell[i]].setReferenceCell(s);
                 }
             }
             aktCells.remove(aktCellIndex);
-            score.remove(aktCellIndex);
-            wayLength.remove(aktCellIndex);
 
-            for (int i = 0; i < score.size(); i++) {
-                if(score.get(i) < maxCost) {
-                    maxCost = score.get(i);
+
+            for (int i = 0; i < aktCells.size(); i++) {
+                if(cell[aktCells.get(i)].getCost() < maxCost) {
+                    maxCost = cell[aktCells.get(i)].getCost();
                     aktCellIndex = i;
                 }
             }
@@ -130,7 +125,7 @@ public class Maze {
             int lastCell = aktCells.get(aktCellIndex);
             while (!cell[0].fastestPath) {
                 cell[lastCell].fastestPath = true;
-                lastCell = cell[lastCell].GetReferenceCell();
+                lastCell = cell[lastCell].getReferenceCell();
             }
 
     }
