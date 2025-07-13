@@ -1,4 +1,4 @@
-package com.baljeet.api.Chess;
+package com.baljeet.api.Chess.Core;
 
 
 public class PrecomputedData {

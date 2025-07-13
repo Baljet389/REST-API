@@ -1,6 +1,9 @@
 package com.baljeet.api;
 
-import com.baljeet.api.Chess.*;
+import com.baljeet.api.Chess.Core.Board;
+import com.baljeet.api.Chess.Core.MoveList;
+import com.baljeet.api.Chess.Core.MoveGeneration;
+import com.baljeet.api.Chess.Core.PrecomputedData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,20 +35,24 @@ public class ChessTest {
                 Arguments.of("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 4, 2103487L),
                 Arguments.of("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", 4, 3894594L),
                 Arguments.of("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1", 4, 422333L),
-                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5, 4865609L)
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5, 4865609L),
+                Arguments.of("8/2k1p3/3pP3/3P2K1/8/8/8/8 w - - 0 1",6,34834),
+                Arguments.of("r3k2r/8/3Q4/8/8/5q2/8/R3K2R b KQkq - 0 1",4,1720476),
+                Arguments.of("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",3,89890),
+                Arguments.of("8/8/1P2K3/8/2n5/1q6/8/5k2 b - - 0 1",5,1004658)
         );
     }
-    public long numberOfPositionsReached(int depth){
-        if (depth == 0){
+
+    public long numberOfPositionsReached(int depth) {
+        if (depth == 0) {
             return 1;
         }
         long numberOfPositions = 0;
-        ArrayList<Move> moves = moveGeneration.getAllMoves();
-        for (Move move: moves){
-            board.makeMove(move);
-            long abc= numberOfPositionsReached(depth-1);
-            numberOfPositions+=abc;
-            board.undoMove(move);
+        MoveList moves = moveGeneration.getAllMoves();
+        for (int i = 0;i<moves.size();i++) {
+            board.makeMove(moves.get(i));
+            numberOfPositions += numberOfPositionsReached(depth - 1);
+            board.undoMove(moves.get(i));
         }
         return numberOfPositions;
     }

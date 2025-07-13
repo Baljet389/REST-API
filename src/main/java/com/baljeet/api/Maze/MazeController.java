@@ -12,13 +12,10 @@ public class MazeController {
     private Maze currentMaze = null;
     int width;
     int height;
-    static class GenerateMazeRequest {
-        public int width;
-        public int height;
-    }
+
 
     @PostMapping("/generate")
-    public ResponseEntity<List<MazeResponses.GenerateResponse>> postMaze(@RequestBody GenerateMazeRequest request) {
+    public ResponseEntity<List<MazeResponses.GenerateResponse>> postMaze(@RequestBody MazeRequests.GenerateMazeRequest request) {
         if (request.width <= 0 || request.height <= 0) {
             return ResponseEntity.badRequest().build();
         }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MazeResponses {
-    static class GenerateResponse {
+   public static class GenerateResponse {
 
         public int w;
 
@@ -30,7 +30,7 @@ public class MazeResponses {
             return response;
         }
     }
-     static class SolveResponse{
+    public static class SolveResponse{
          public int p;
 
          public SolveResponse(int p) {

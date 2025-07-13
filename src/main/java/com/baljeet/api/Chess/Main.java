@@ -1,10 +1,13 @@
 package com.baljeet.api.Chess;
 
+import com.baljeet.api.Chess.Core.Board;
+import com.baljeet.api.Chess.Core.MoveList;
+
 import java.util.ArrayList;
 
 public class Main {
     public Board board;
-    public ArrayList<Move> moves;
+    public ArrayList<MoveList> moves;
 
     public Main(){
         //board = new Board();
@@ -16,7 +19,7 @@ public class Main {
 
     }
     public void printMoves(){
-        for(Move move : moves){
+        for(MoveList move : moves){
             System.out.println(move.toString());
         }
     }

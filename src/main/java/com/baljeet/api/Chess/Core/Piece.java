@@ -1,4 +1,4 @@
-package com.baljeet.api.Chess;
+package com.baljeet.api.Chess.Core;
 
 public class Piece {
     public static final int EMPTY = 0;

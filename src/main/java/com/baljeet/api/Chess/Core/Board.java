@@ -1,4 +1,4 @@
-package com.baljeet.api.Chess;
+package com.baljeet.api.Chess.Core;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -190,14 +190,14 @@ public class Board {
         fullMoveNumber = Integer.parseInt(parts[5]);
 
     }
-    public void makeMove(Move move){
+    public void makeMove(int move){
         GameState info = new GameState();
 
-        int from = move.getFrom();
-        int to = move.getTo();
+        int from = MoveList.getFrom(move);
+        int to = MoveList.getTo(move);
 
         int piece = currentPosition[from];
-        int flag = move.getFlag();
+        int flag = MoveList.getFlag(move);
 
         long[] enemyPieces = whiteToMove ? blackBitboards:whiteBitboards;
         long[] friendlyPieces = whiteToMove ? whiteBitboards:blackBitboards;
@@ -277,12 +277,12 @@ public class Board {
         gameStates.push(info);
     }
 
-    public void undoMove(Move move) {
+    public void undoMove(int move) {
         GameState info = gameStates.pop();
 
-        int from = move.getFrom();
-        int to = move.getTo();
-        int flag = move.getFlag();
+        int from = MoveList.getFrom(move);
+        int to = MoveList.getTo(move);
+        int flag = MoveList.getFlag(move);
 
         // Switch turn back
         whiteToMove = !whiteToMove;

@@ -1,4 +1,4 @@
-package com.baljeet.api.Chess;
+package com.baljeet.api.Chess.Core;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class MoveGeneration {
     public boolean doubleCheck;
     private final Board board;
     private boolean white;
-    public ArrayList<Move> moves;
+    public MoveList moves;
 
     private long[] friendlyBitboards;
     private long[] enemyBitboards;
@@ -29,6 +29,7 @@ public class MoveGeneration {
 
     public MoveGeneration(Board board){
         this.board = board;
+
     }
     private void init(){
         white = board.whiteToMove;
@@ -165,8 +166,8 @@ public class MoveGeneration {
 
 
     }
-    public ArrayList<Move> getAllMoves(){
-        moves = new ArrayList<>();
+    public MoveList getAllMoves(){
+        moves = new MoveList();
         init();
         getAttackMaps();
         getMovesKing();
@@ -237,7 +238,7 @@ public class MoveGeneration {
             doublePushes &= (doublePushes - 1);
             int from = to + 2 * pushOffset;
             if (isNotPinned(from) || stayOnRay(from,to)) {
-                moves.add(new Move(from, to, Piece.DOUBLE_PUSH));
+                moves.add(MoveList.packMove(from, to, Piece.DOUBLE_PUSH));
             }
         }
         //captures
@@ -271,7 +272,7 @@ public class MoveGeneration {
                 int from = Long.numberOfTrailingZeros(pawns);
                 if ((isNotPinned(from) || stayOnRay(from,board.enPassantSquare))
                         && !inCheckAfterEnPassant(from,board.enPassantSquare, board.enPassantSquare+pushOffset)) {
-                    moves.add(new Move(from, board.enPassantSquare, Piece.EN_PASSANT));
+                    moves.add(MoveList.packMove(from, board.enPassantSquare, Piece.EN_PASSANT));
                 }
                 pawns &= (pawns-1);
             }
@@ -287,7 +288,7 @@ public class MoveGeneration {
                 while (possibleMoves != 0) {
                     int to = Long.numberOfTrailingZeros(possibleMoves);
                     int flag = ((enemy & 1L << to) == 0) ? Piece.NO_FLAG : Piece.CAPTURE;
-                    moves.add(new Move(from,to,flag));
+                    moves.add(MoveList.packMove(from,to,flag));
                     possibleMoves &= (possibleMoves - 1);
                 }
 
@@ -299,7 +300,7 @@ public class MoveGeneration {
         while (possibleMoves != 0){
             int to = Long.numberOfTrailingZeros(possibleMoves);
             int flag = ((enemy & 1L << to) == 0) ? Piece.NO_FLAG : Piece.CAPTURE;
-            moves.add(new Move(positionFriendlyKing,to,flag));
+            moves.add(MoveList.packMove(positionFriendlyKing,to,flag));
             possibleMoves &= (possibleMoves-1);
         }
         //castling
@@ -310,14 +311,14 @@ public class MoveGeneration {
         if ((kingCastle & 1) != 0 && !check) {
             long mask = white? PrecomputedData.castling[0]:PrecomputedData.castling[2];
             if ((mask & (attack | occupied)) ==0) {
-                moves.add(new Move(positionFriendlyKing, positionFriendlyKing - 2, Piece.KING_CASTLE));
+                moves.add(MoveList.packMove(positionFriendlyKing, positionFriendlyKing - 2, Piece.KING_CASTLE));
             }
             }
         if ((queenCastle & 1) != 0 && !check) {
             long maskAttack = white? PrecomputedData.castling[1]:PrecomputedData.castling[3];
             long maskBlocker = white? PrecomputedData.castling[4]:PrecomputedData.castling[5];
             if ((maskBlocker & occupied) == 0 && (maskAttack & attack) == 0) {
-                moves.add(new Move(positionFriendlyKing, positionFriendlyKing + 2, Piece.QUEEN_CASTLE));
+                moves.add(MoveList.packMove(positionFriendlyKing, positionFriendlyKing + 2, Piece.QUEEN_CASTLE));
             }
         }
     }
@@ -335,7 +336,7 @@ public class MoveGeneration {
             while (possibleMoves != 0) {
                 int to = Long.numberOfTrailingZeros(possibleMoves);
                 int flag = ((enemy & 1L << to) == 0) ? Piece.NO_FLAG : Piece.CAPTURE;
-                moves.add(new Move(from, to, flag));
+                moves.add(MoveList.packMove(from, to, flag));
                 possibleMoves &= possibleMoves - 1;
             }
             rooks &= (rooks - 1);
@@ -351,7 +352,7 @@ public class MoveGeneration {
             while (possibleMoves != 0) {
                 int to = Long.numberOfTrailingZeros(possibleMoves);
                 int flag = ((enemy & 1L << to) == 0) ? Piece.NO_FLAG : Piece.CAPTURE;
-                moves.add(new Move(from, to, flag));
+                moves.add(MoveList.packMove(from, to, flag));
                 possibleMoves &= possibleMoves - 1;
             }
             bishops &= (bishops - 1);
@@ -379,13 +380,13 @@ public class MoveGeneration {
    }
    private void addMovesSingleCaptures(int from, int to,int flag){
        if ((1L << to & 0xff000000000000ffL) == 0) {
-           moves.add(new Move(from, to, flag));
+           moves.add(MoveList.packMove(from, to, flag));
        }
        else {
-           moves.add(new Move(from, to, Piece.PROMOTION_KNIGHT));
-           moves.add(new Move(from, to, Piece.PROMOTION_BISHOP));
-           moves.add(new Move(from, to, Piece.PROMOTION_ROOK));
-           moves.add(new Move(from, to, Piece.PROMOTION_QUEEN));
+           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_KNIGHT));
+           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_BISHOP));
+           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_ROOK));
+           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_QUEEN));
        }
    }
 

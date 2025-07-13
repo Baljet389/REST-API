@@ -1,4 +1,4 @@
-package com.baljeet.api.Chess;
+package com.baljeet.api.Chess.Core;
 
 //MT19937
 public class MersenneTwister {
