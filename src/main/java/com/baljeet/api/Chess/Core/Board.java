@@ -9,7 +9,7 @@ public class Board {
 
     public int[] currentPosition;
     public long[][] zobristRandomNumbers;
-    long zobristHash;
+    public long zobristHash;
 
     public boolean whiteToMove;
     public byte castlingRights;
@@ -28,7 +28,7 @@ public class Board {
         public int halfMoveClock;
         public int enPassantSquare;
         public byte castlingRights;
-        public int zobristHash;
+        public long zobristHash;
     }
     static {
         Arrays.fill(CASTLING_MASK, (byte) 0b1111); // default: preserve all
@@ -56,8 +56,8 @@ public class Board {
 
         //pieces on 64 squares
         for (int i = 0; i < 64; i++) {
-            long[] random = new long[12];
-            for (int j = 0; j < 12; j++) {
+            long[] random = new long[13];
+            for (int j = 0; j < 13; j++) {
                 random[j] = mersenneTwister.nextLong();
             }
             zobristRandomNumbers[i] = random;
@@ -66,8 +66,8 @@ public class Board {
         zobristRandomNumbers[64] = new long[]{mersenneTwister.nextLong()};
 
         //castling
-        long[] randomCastle = new long[4];
-        for (int i = 0; i < 4; i++) {
+        long[] randomCastle = new long[16];
+        for (int i = 0; i < 16; i++) {
             randomCastle[i] = mersenneTwister.nextLong();
         }
         zobristRandomNumbers[65] = randomCastle;
@@ -79,21 +79,15 @@ public class Board {
         }
         zobristRandomNumbers[66] = randomEnPassant;
 
-        int offset = whiteToMove ? 0 : 6;
         for (int i = 0; i < 64; i++) {
             if(currentPosition[i] == 0) continue;
-            zobristHash ^= zobristRandomNumbers[i][(currentPosition[i] + offset - 1)];
+            int offset = ((1L << i) & whiteBitboards[currentPosition[i]]) != 0 ? 0 : 6;
+            zobristHash ^= zobristRandomNumbers[i][(currentPosition[i] + offset)];
         }
-        if (whiteToMove) zobristHash ^= zobristRandomNumbers[64][0];
+        if(!whiteToMove) zobristHash ^= zobristRandomNumbers[64][0];
 
-        //white king side
-        if ((castlingRights & 0b0001) != 0) zobristHash ^= zobristRandomNumbers[65][0];
-        //white queen side
-        if ((castlingRights & 0b0010) != 0) zobristHash ^= zobristRandomNumbers[65][1];
-        //black king side
-        if ((castlingRights & 0b0100) != 0) zobristHash ^= zobristRandomNumbers[65][2];
-        //black queen side
-        if ((castlingRights & 0b1000) != 0) zobristHash ^= zobristRandomNumbers[65][3];
+
+        zobristHash ^= zobristRandomNumbers[65][castlingRights];
 
         if(enPassantSquare != -1) zobristHash^= zobristRandomNumbers[66][enPassantSquare % 8];
 
@@ -199,16 +193,20 @@ public class Board {
         int piece = currentPosition[from];
         int flag = MoveList.getFlag(move);
 
-        long[] enemyPieces = whiteToMove ? blackBitboards:whiteBitboards;
-        long[] friendlyPieces = whiteToMove ? whiteBitboards:blackBitboards;
+        long[] enemyPieces = whiteToMove ? blackBitboards : whiteBitboards;
+        long[] friendlyPieces = whiteToMove ? whiteBitboards : blackBitboards;
+        int friendlyOffset = whiteToMove ? 0 : 6;
+        int enemyOffset = whiteToMove ? 6 : 0;
 
         info.enPassantSquare = enPassantSquare;
         info.castlingRights = castlingRights;
         info.capturedPiece = Piece.EMPTY;
+        info.zobristHash = zobristHash;
 
         // Remove piece from from-square
         friendlyPieces[piece] &= ~(1L << from);
         currentPosition[from] = Piece.EMPTY;
+        zobristHash ^= zobristRandomNumbers[from][piece + friendlyOffset];
 
         // Handle en passant capture
         if (flag == Piece.EN_PASSANT) {
@@ -216,11 +214,14 @@ public class Board {
             enemyPieces[Piece.PAWN] &= ~(1L << capturedPawnSquare);
             currentPosition[capturedPawnSquare] = Piece.EMPTY;
             info.capturedPiece = Piece.PAWN;
+
+            zobristHash ^= zobristRandomNumbers[capturedPawnSquare][Piece.PAWN + enemyOffset];
         }
 
         // Handle regular captures
         else if (flag == Piece.CAPTURE) {
             info.capturedPiece = currentPosition[to];
+            zobristHash ^= zobristRandomNumbers[to][currentPosition[to] + enemyOffset];
             enemyPieces[currentPosition[to]] &= ~(1L << to);
 
         }//Handle Castling
@@ -230,6 +231,9 @@ public class Board {
 
             friendlyPieces[Piece.ROOK] |= (1L << (to + 1));
             friendlyPieces[Piece.ROOK] &= ~(1L << (to - 1));
+
+            zobristHash ^= zobristRandomNumbers[to + 1][Piece.ROOK + friendlyOffset];
+            zobristHash ^= zobristRandomNumbers[to - 1][Piece.ROOK + friendlyOffset];
         }
         else if (flag == Piece.QUEEN_CASTLE) {
             currentPosition[to - 1] = Piece.ROOK;
@@ -237,30 +241,39 @@ public class Board {
 
             friendlyPieces[Piece.ROOK] |= (1L << (to - 1));
             friendlyPieces[Piece.ROOK] &= ~(1L << (to + 2));
+
+            zobristHash ^= zobristRandomNumbers[to - 1][Piece.ROOK + friendlyOffset];
+            zobristHash ^= zobristRandomNumbers[to + 2][Piece.ROOK + friendlyOffset];
         }
 
         // Place moved piece
         if (flag >= Piece.PROMOTION_KNIGHT && flag <= Piece.PROMOTION_QUEEN) {
             if (currentPosition[to] != 0) {
                 info.capturedPiece = currentPosition[to];
+                zobristHash ^= zobristRandomNumbers[to][currentPosition[to] + enemyOffset];
                 enemyPieces[currentPosition[to]] &= ~(1L << to);
             }
             friendlyPieces[flag] |= (1L << to);
             currentPosition[to] = flag;
+            zobristHash ^= zobristRandomNumbers[to][flag + friendlyOffset];
         } else {
             friendlyPieces[piece] |= (1L << to);
             currentPosition[to]= piece;
+            zobristHash ^= zobristRandomNumbers[to][piece+friendlyOffset];
         }
-
+        if(info.enPassantSquare != -1) zobristHash ^= zobristRandomNumbers[66][enPassantSquare%8];
         // Update en passant square
         if (flag == Piece.DOUBLE_PUSH) {
             enPassantSquare = whiteToMove ? from + 8 : from - 8;
+            zobristHash ^= zobristRandomNumbers[66][enPassantSquare % 8];
         } else {
             enPassantSquare = -1;
         }
         // Update castling rights
+        zobristHash ^= zobristRandomNumbers[65][castlingRights];
         castlingRights &= CASTLING_MASK[from];
         castlingRights &= CASTLING_MASK[to];
+        zobristHash ^= zobristRandomNumbers[65][castlingRights];
 
         // 50 move rule
         info.halfMoveClock = halfMoveClock;
@@ -274,6 +287,7 @@ public class Board {
             fullMoveNumber++;
         }
         whiteToMove = !whiteToMove;
+        zobristHash ^= zobristRandomNumbers[64][0];
         gameStates.push(info);
     }
 
@@ -358,6 +372,7 @@ public class Board {
         enPassantSquare = info.enPassantSquare;
         castlingRights = info.castlingRights;
         halfMoveClock = info.halfMoveClock;
+        zobristHash = info.zobristHash;;
 
         if (!whiteToMove) {
             fullMoveNumber--;

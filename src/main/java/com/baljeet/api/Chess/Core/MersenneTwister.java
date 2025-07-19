@@ -54,7 +54,7 @@ public class MersenneTwister {
         return y ^ (y >>> l);
 
     }
-    long nextLong(){
+    public long nextLong(){
        return nextInt() | ((long) nextInt() << 32);
     }
 

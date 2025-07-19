@@ -1,9 +1,6 @@
 package com.baljeet.api;
 
-import com.baljeet.api.Chess.Core.Board;
-import com.baljeet.api.Chess.Core.MoveList;
-import com.baljeet.api.Chess.Core.MoveGeneration;
-import com.baljeet.api.Chess.Core.PrecomputedData;
+import com.baljeet.api.Chess.Core.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,6 +15,7 @@ import java.util.stream.Stream;
 public class ChessTest {
     MoveGeneration moveGeneration;
     Board board;
+    MersenneTwister mersenneTwister;
 
     @ParameterizedTest
     @MethodSource("testPositions")
@@ -27,6 +25,29 @@ public class ChessTest {
         moveGeneration = new MoveGeneration(board);
         long result = numberOfPositionsReached(depth);
         assertEquals(expected, result, "Mismatch for FEN: " + fen);
+    }
+    @ParameterizedTest
+    @MethodSource("testPositions")
+    void testZobristHash(String fen){
+        new PrecomputedData();
+        board = new Board(fen);
+        moveGeneration = new MoveGeneration(board);
+        mersenneTwister = new MersenneTwister(11);
+        String fenEnd = null;
+        for (int i = 0; i < 30; i++) {
+            MoveList moveList = moveGeneration.getAllMoves();
+            if (moveList.isEmpty()) {
+                break;
+            }
+            long rand = Math.abs((long) mersenneTwister.nextInt());
+            int index = (int) rand % moveList.size();
+            System.out.println(MoveList.moveToString(moveList.get(index)));
+            board.makeMove(moveList.get(index));
+            fenEnd = board.toString();
+        }
+        Board testBoard = new Board(fenEnd);
+        System.out.println("Expected board hash: " + testBoard.zobristHash + ". Board hash: " + board.zobristHash);
+        assertEquals(testBoard.zobristHash,board.zobristHash, "Mismatch in hashes: Start Fen: " + fen);
     }
 
     private static Stream<Arguments> testPositions() {

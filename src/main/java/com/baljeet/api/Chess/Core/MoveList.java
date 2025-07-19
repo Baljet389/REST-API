@@ -28,6 +28,10 @@ public class MoveList {
         return moves;
     }
 
+    public boolean isEmpty(){
+        return size == 0;
+    }
+
     public static int packMove(int from, int to, int flag) {
         return  (from | (to<<6) | (flag << 12));
     }
