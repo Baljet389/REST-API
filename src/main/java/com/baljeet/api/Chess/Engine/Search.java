@@ -7,17 +7,18 @@ import com.baljeet.api.Chess.Core.MoveList;
 public class Search {
     private final Board board;
     private final MoveGeneration moveGeneration;
-    private int optimalMove;
-
+    public int optimalMove;
     public int evaluation;
+
+    private int searchDepth = 3;
 
     Search(Board board){
         this.board = board;
         moveGeneration = new MoveGeneration(board);
     }
     public int getBestMove(){
-        evaluation = negaMax(0,0,3);
-        return  optimalMove;
+        evaluation = negaMax(Integer.MIN_VALUE,Integer.MAX_VALUE,3);
+        return optimalMove;
     }
 
     private int negaMax(int alpha, int beta, int depth) {
@@ -30,16 +31,19 @@ public class Search {
             board.makeMove(move);
             int score = -negaMax(-beta, -alpha, depth - 1);
             board.undoMove(move);
-
-            if (score > max) {
-                optimalMove = move;
+            if(score > max){
                 max = score;
-                if (score>alpha) alpha = score;
+                if(depth == searchDepth){
+                    optimalMove = move;
+                }
+                if(score > alpha){
+                    alpha = score;
+                }
             }
-            if (score >= beta){
-                optimalMove = move;
-                return  max;
+            if(score >= beta){
+                return max;
             }
+
         }
         return max;
     }
