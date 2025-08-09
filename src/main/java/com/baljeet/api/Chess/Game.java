@@ -17,8 +17,19 @@ public class Game {
         board = new Board(fen);
         moveGeneration = new MoveGeneration(board);
         this.engine = engine;
-    }
 
+    }
+    public ChessResponses.gameState startGame(){
+        ChessResponses.gameState response = new ChessResponses.gameState();
+        MoveList moveList = moveGeneration.getAllMoves();
+        if (moveList.isEmpty()){
+            if (moveGeneration.check) response.checkmate = true;
+            else response.draw = true;
+        }
+        if (moveGeneration.check) response.check = true;
+        response.fen = board.toString();
+        return response;
+    }
     public ChessResponses.getMovesResponse getMoves(int square){
         ChessResponses.getMovesResponse response = new ChessResponses.getMovesResponse();
         MoveList moveList = moveGeneration.getAllMoves();
@@ -32,8 +43,8 @@ public class Game {
         response.moves = list;
         return response;
     }
-    public ChessResponses.makeMoveResponse makeMove(int move){
-        ChessResponses.makeMoveResponse response = new ChessResponses.makeMoveResponse();
+    public ChessResponses.gameState makeMove(int move){
+        ChessResponses.gameState response = new ChessResponses.gameState();
         board.makeMove(move);
         MoveList moveList = moveGeneration.getAllMoves();
         if (moveList.isEmpty()){

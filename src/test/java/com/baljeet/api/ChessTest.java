@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -41,7 +40,6 @@ public class ChessTest {
             }
             long rand = Math.abs((long) mersenneTwister.nextInt());
             int index = (int) rand % moveList.size();
-            System.out.println(MoveList.moveToString(moveList.get(index)));
             board.makeMove(moveList.get(index));
             fenEnd = board.toString();
         }

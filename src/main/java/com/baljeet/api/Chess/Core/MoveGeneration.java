@@ -1,6 +1,5 @@
 package com.baljeet.api.Chess.Core;
 
-import java.util.ArrayList;
 
 public class MoveGeneration {
 

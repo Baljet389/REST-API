@@ -5,9 +5,6 @@ public class ChessRequests {
         public boolean engine;
         public String fen;
     }
-    public static class getAllMovesRequest{
-        public int square;
-    }
     public static class makeMove{
         public int move;
     }
