@@ -372,7 +372,7 @@ public class Board {
         enPassantSquare = info.enPassantSquare;
         castlingRights = info.castlingRights;
         halfMoveClock = info.halfMoveClock;
-        zobristHash = info.zobristHash;;
+        zobristHash = info.zobristHash;
 
         if (!whiteToMove) {
             fullMoveNumber--;
@@ -429,7 +429,7 @@ public class Board {
         // 4. En passant
         fen.append(enPassantSquare == -1 ? "-" : indexToSquare(enPassantSquare)).append(" ");
 
-        // 5. Halfmove and fullmove
+        // 5. Half move and full move
         fen.append(halfMoveClock).append(" ").append(fullMoveNumber);
 
         return fen.toString();
@@ -455,16 +455,16 @@ public class Board {
 
         return '.';
     }
-    public static void printBoard(long bitboard){
-        long mask = 1L<<63;
 
-        for(int i = 1; i <= 64;i++){
-            int bit = ((mask & bitboard) == 0) ? 0 : 1 ;
+    public static void printBoard(long bitboard) {
+        long mask = 1L << 63;
 
-            if(i % 8 != 0){
-                System.out.print(bit +"  ");
-            }
-            else{
+        for (int i = 1; i <= 64; i++) {
+            int bit = ((mask & bitboard) == 0) ? 0 : 1;
+
+            if (i % 8 != 0) {
+                System.out.print(bit + "  ");
+            } else {
                 System.out.println(bit);
             }
             mask = mask >>> 1;

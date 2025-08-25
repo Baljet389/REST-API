@@ -8,4 +8,9 @@ public class ChessRequests {
     public static class makeMove{
         public int move;
     }
+    public static class engineMakeMove{
+        //Time in milliseconds
+        public long timeLeft;
+        public long increment;
+    }
 }

@@ -11,8 +11,7 @@ public class ChessController {
     @PutMapping("/start")
     public ResponseEntity<ChessResponses.gameState> startGame(@RequestBody ChessRequests.StartGameRequest request){
         String fen = request.fen;
-        boolean engine = request.engine;
-        game = new Game(fen,engine);
+        game = new Game(fen);
 		return ResponseEntity.ok(game.startGame());
     }
     @GetMapping("/getMoves")
@@ -25,6 +24,11 @@ public class ChessController {
     public ResponseEntity<ChessResponses.gameState> makeMove(@RequestBody ChessRequests.makeMove request){
         if(game == null) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(game.makeMove(request.move));
+    }
+    @PostMapping("/makeEngineMove")
+    public ResponseEntity<ChessResponses.gameState> makeEngineMove(@RequestBody ChessRequests.engineMakeMove request){
+        if(game == null) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(game.makeEngineMove(request.timeLeft,request.increment));
     }
 
 }

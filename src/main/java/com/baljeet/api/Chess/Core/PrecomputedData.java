@@ -15,7 +15,8 @@ public class PrecomputedData {
     //Magics from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-UCI/Chess-Coding-Adventure/src/Core/Move%20Generation/Magics/PrecomputedMagics.cs
     //https://github.com/Luecx/Koivisto/blob/master/src_files/attacks.h#L26
     // and https://github.com/milostatarevic/xiphos/blob/master/src/magic.h#L24 for some reason only a few from each worked
-    public static final int[] rookShifts = { 52, 53, 53, 53, 53, 53, 53, 52,
+    public static final int[] rookShifts =
+            {52, 53, 53, 53, 53, 53, 53, 52,
             53, 54, 54, 54, 54, 54, 54, 53,
             53, 54, 54, 54, 54, 54, 54, 53,
             53, 54, 54, 54, 54, 54, 54, 53,
@@ -23,7 +24,15 @@ public class PrecomputedData {
             53, 54, 54, 54, 54, 54, 54, 53,
             53, 54, 54, 54, 54, 54, 54, 53,
             52, 53, 53, 53, 53, 53, 53, 52};
-    public static final int[] bishopShifts = {58,59,59,59,59,59,59,58,59,59,59,59,59,59,59,59,59,59,57,57,57,57,59,59,59,59,57,55,55,57,59,59,59,59,57,55,55,57,59,59,59,59,57,57,57,57,59,59,59,59,59,59,59,59,59,59,58,59,59,59,59,59,59,58};
+    public static final int[] bishopShifts =
+            {58, 59, 59, 59, 59, 59, 59, 58,
+            59, 59, 59, 59, 59, 59, 59, 59,
+            59, 59, 57, 57, 57, 57, 59, 59,
+            59, 59, 57, 55, 55, 57, 59, 59,
+            59, 59, 57, 55, 55, 57, 59, 59,
+            59, 59, 57, 57, 57, 57, 59, 59,
+            59, 59, 59, 59, 59, 59, 59, 59,
+            58, 59, 59, 59, 59, 59, 59, 58};
 
     public static final long[] rookMagics = {  0x0080001020400080L, 0x0040001000200040L, 0x0080081000200080L, 0x0080040800100080L,
             0x0080020400080080L, 0x0080010200040080L, 0x0080008001000200L, 0x0080002040800100L,

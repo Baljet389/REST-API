@@ -127,14 +127,9 @@ public class MoveGeneration {
             case 1:
                 check = true;
                 break;
-            case 2:
-                check = true;
-                doubleCheck = true;
-                break;
             default:
                 check = true;
                 doubleCheck = true;
-                System.out.println("More than 2 checks !!!!!!!!!!!!!!!");
         }
 
         //Pins
@@ -382,10 +377,10 @@ public class MoveGeneration {
            moves.add(MoveList.packMove(from, to, flag));
        }
        else {
+           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_QUEEN));
            moves.add(MoveList.packMove(from, to, Piece.PROMOTION_KNIGHT));
            moves.add(MoveList.packMove(from, to, Piece.PROMOTION_BISHOP));
            moves.add(MoveList.packMove(from, to, Piece.PROMOTION_ROOK));
-           moves.add(MoveList.packMove(from, to, Piece.PROMOTION_QUEEN));
        }
    }
 

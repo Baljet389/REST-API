@@ -1,23 +1,23 @@
 package com.baljeet.api.Chess;
 
-import com.baljeet.api.Chess.Core.Board;
-import com.baljeet.api.Chess.Core.MoveGeneration;
-import com.baljeet.api.Chess.Core.MoveList;
-import com.baljeet.api.Chess.Core.PrecomputedData;
+import com.baljeet.api.Chess.Core.*;
+import com.baljeet.api.Chess.Engine.*;
+
 
 import java.util.ArrayList;
 
 public class Game {
     private final Board board;
     private final MoveGeneration moveGeneration;
-    private boolean engine;
+    private final Engine engine;
+    ArrayList<Long> repetitionTable;
 
-    public Game(String fen, boolean engine){
+    public Game(String fen){
         new PrecomputedData();
         board = new Board(fen);
         moveGeneration = new MoveGeneration(board);
-        this.engine = engine;
-
+        repetitionTable = new ArrayList<>();
+        engine = new BaljeetEngine(board, repetitionTable);
     }
     public ChessResponses.gameState startGame(){
         ChessResponses.gameState response = new ChessResponses.gameState();
@@ -28,6 +28,7 @@ public class Game {
         }
         if (moveGeneration.check) response.check = true;
         response.fen = board.toString();
+        repetitionTable.add(board.zobristHash);
         return response;
     }
     public ChessResponses.getMovesResponse getMoves(int square){
@@ -53,7 +54,24 @@ public class Game {
         }
         if (moveGeneration.check) response.check = true;
         response.fen = board.toString();
+        repetitionTable.add(board.zobristHash);
+        if(isRepetition(board.zobristHash) || board.halfMoveClock >= 50) response.draw = true;
         return response;
+    }
+    public ChessResponses.gameState makeEngineMove(long timeLeft,long increment){
+
+        int move = engine.getBestMove(timeLeft,increment);
+        return makeMove(move);
+    }
+    private boolean isRepetition(long currentKey){
+        int count = 0;
+        for (long key: repetitionTable) {
+            if (key == currentKey) {
+                count++;
+                if (count == 3) return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -17,7 +17,7 @@ public class MersenneTwister {
     private static final int c = 0xEFC60000;
 
     private static final int l = 18;
-    private int[] initial;
+    private final int[] initial;
     private int index;
 
     public MersenneTwister(int seed){

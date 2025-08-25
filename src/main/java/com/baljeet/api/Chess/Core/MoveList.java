@@ -28,6 +28,11 @@ public class MoveList {
         return moves;
     }
 
+    //i must be < moves.size()
+    public void set(int i,int move){
+        moves[i] = move;
+    }
+
     public boolean isEmpty(){
         return size == 0;
     }
@@ -43,7 +48,9 @@ public class MoveList {
         return (move & 0xfc0) >>> 6;
     }
 
-    public static int getFlag(int move) {return (move & 0xf000) >>>12;}
+    public static int getFlag(int move) {
+        return (move & 0xf000) >>>12;
+    }
 
 
     public static String moveToString(int move) {
