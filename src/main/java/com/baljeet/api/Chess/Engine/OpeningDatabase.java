@@ -24,7 +24,7 @@ public class OpeningDatabase {
         catch (IOException e){System.out.println(e.toString());}
     }
     public void init() throws IOException {
-        Resource resource = new ClassPathResource("opening/book.txt");
+        Resource resource = new ClassPathResource("opening/Book.txt");
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
             String fen = null;
